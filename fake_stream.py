@@ -4,15 +4,35 @@ __author__ = 'mFoxRU'
 from random import random
 from math import sin, cos
 
-from stream import LimList
+from stream import Streamer, LimList
 
 
-def src(mx=256, lim=300):
-    seed = random()*random()
-    fn = lambda x: int((mx + mx*sin(x/10)*cos(seed*20))/2)
-    data = LimList([], lim)
-    step = 0
-    while 1:
-        data.append(fn(step))
-        yield (range(len(data)), data)
-        step += 1
+class FakeStreamer(Streamer):
+    def __init__(self, port, speed=9600, channels=3, lim=500):
+        self._channels = channels
+        self._data = LimList([
+            [] for _ in xrange(channels)
+        ], lim)
+
+        mx = 255
+        fn = lambda x: int((mx + mx*sin(x/10)*cos(random()*random()*20))/2)
+        self.fn = [fn for _ in xrange(channels)]
+        self._calc = self.calc()
+
+
+    @property
+    def data(self):
+        x = self._calc.next()
+        print x
+        return x
+
+    def calc(self):
+        step = 0
+        while 1:
+            for n, data in enumerate(self._data):
+                data.append(self.fn[n](step))
+            step += 1
+            yield self._data
+            
+    def start(self):
+        pass
