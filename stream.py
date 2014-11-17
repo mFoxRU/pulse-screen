@@ -7,12 +7,14 @@ import serial
 
 
 class LimList(list):
-    def __init__(self, iterable, lim=600):
+    def __init__(self, iterable, lim=200):
         super(self.__class__, self).__init__(iterable)
         self.lim = lim
+        self.counter = len(iterable)
 
     def append(self, p_object):
         super(self.__class__, self).append(p_object)
+        self.counter += 1
         while self.__len__() > self.lim:
             self.pop(0)
 
@@ -20,7 +22,7 @@ class LimList(list):
 class Streamer(object):
     _start_bytes = 'ffff'
 
-    def __init__(self, port, speed=9600, channels=3, lim=500):
+    def __init__(self, port, speed=115200, channels=3, lim=200):
         try:
             self.port = serial.Serial(port, speed, timeout=0.1)
         except serial.SerialException as e:

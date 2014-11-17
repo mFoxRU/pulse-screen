@@ -20,11 +20,12 @@ def parse_args():
 
 
 def main():
+    lim = 200
     conf = parse_args()
     if conf.f:
-        stream = FakeStreamer(conf.port, channels=conf.channels)
+        stream = FakeStreamer(conf.port, channels=conf.channels, lim=lim)
     else:
-        stream = Streamer(conf.port, channels=conf.channels)
+        stream = Streamer(conf.port, channels=conf.channels, lim=lim)
         stream.start()
 
     plotter(stream)
