@@ -25,11 +25,15 @@ class Streamer(object):
             self.port = serial.Serial(port, speed, timeout=0.1)
         except serial.SerialException as e:
             exit(e)
-        self.channels = channels
+        self._channels = channels
         self._data = LimList([
             [] for _ in xrange(channels)
         ], lim)
         self.locker = thread.allocate_lock()
+
+    @property
+    def channels(self):
+        return self._channels
 
     @property
     def data(self):
@@ -55,6 +59,3 @@ class Streamer(object):
 
     def start(self):
         thread.start_new_thread(self.calc, ())
-
-
-
