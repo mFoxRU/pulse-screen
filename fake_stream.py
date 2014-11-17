@@ -13,24 +13,22 @@ class FakeStreamer(Streamer):
         self._data = LimList([
             [] for _ in xrange(channels)
         ], lim)
-
         mx = 255
-        fn = lambda x: int((mx + mx*sin(x/10)*cos(random()*random()*20))/2)
-        self.fn = [fn for _ in xrange(channels)]
+        self.seeds = [random()*random() for _ in xrange(channels)]
+        self.fn = lambda x, s: int((mx + mx*sin(x/10)*cos(s*20))/2)
         self._calc = self.calc()
 
 
     @property
     def data(self):
         x = self._calc.next()
-        print x
         return x
 
     def calc(self):
         step = 0
         while 1:
             for n, data in enumerate(self._data):
-                data.append(self.fn[n](step))
+                data.append(self.fn(step, self.seeds[n]))
             step += 1
             yield self._data
             
