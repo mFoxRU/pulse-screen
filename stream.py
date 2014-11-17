@@ -47,7 +47,6 @@ class Streamer(object):
             while len(raw) > 4:
                 if raw.startswith(self._start_bytes):
                     info_string = raw[4:4+2*self.channels]
-                    print info_string
                     info_bytes = [info_string[x:x+2]
                                   for x in xrange(self.channels)]
                     with self.locker:
