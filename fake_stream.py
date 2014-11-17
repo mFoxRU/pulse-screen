@@ -8,11 +8,11 @@ from stream import Streamer, LimList
 
 
 class FakeStreamer(Streamer):
-    def __init__(self, port, speed=9600, channels=3, lim=500):
+    def __init__(self, port, speed=9600, channels=3, lim=600):
         self._channels = channels
-        self._data = LimList([
-            [] for _ in xrange(channels)
-        ], lim)
+        self._data = [
+            LimList([], lim) for _ in xrange(channels)
+        ]
         mx = 255
         self.seeds = [random()*random() for _ in xrange(channels)]
         self.fn = lambda x, s: int((mx + mx*sin(x/10)*cos(s*20))/2)

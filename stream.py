@@ -7,7 +7,7 @@ import serial
 
 
 class LimList(list):
-    def __init__(self, iterable, lim=500):
+    def __init__(self, iterable, lim=600):
         super(self.__class__, self).__init__(iterable)
         self.lim = lim
 
@@ -26,9 +26,9 @@ class Streamer(object):
         except serial.SerialException as e:
             exit(e)
         self._channels = channels
-        self._data = LimList([
-            [] for _ in xrange(channels)
-        ], lim)
+        self._data = [
+            LimList([], lim) for _ in xrange(channels)
+        ]
         self.locker = thread.allocate_lock()
 
     @property
