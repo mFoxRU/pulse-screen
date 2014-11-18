@@ -14,8 +14,7 @@ def parse_args():
     parser.add_argument(
         '--channels', action='store', metavar='VALUE', default=3, type=int,
         help='Number of channels in stream')
-    parser.add_argument('-f', help='Use fake stream source')
-
+    parser.add_argument('-f', help='Use fake stream source', action='store_true')
     return parser.parse_args()
 
 

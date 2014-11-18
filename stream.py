@@ -22,9 +22,9 @@ class LimList(list):
 class Streamer(object):
     _start_bytes = 'ffff'
 
-    def __init__(self, port, speed=115200, channels=3, lim=200):
+    def __init__(self, port, speed=9600, channels=3, lim=200):
         try:
-            self.port = serial.Serial(port, speed, timeout=0.1)
+            self.port = serial.Serial(port, speed, timeout=0)
         except serial.SerialException as e:
             exit(e)
         self.lim = lim
@@ -48,9 +48,10 @@ class Streamer(object):
         while 1:
             raw += self.port.readall().encode('hex')
             while len(raw) >= 10:
+                print raw
                 if raw.startswith(self._start_bytes):
-                    info_string = raw[4*2:4*2+2*self.channels]
-                    info_bytes = [info_string[x:x+2]
+                    info_string = raw[4:4+2*self.channels]
+                    info_bytes = [info_string[x*2:x*2+2]
                                   for x in xrange(self.channels)]
                     with self.locker:
                         for data, new in izip(self._data, info_bytes):
