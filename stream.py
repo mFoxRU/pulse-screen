@@ -27,6 +27,7 @@ class Streamer(object):
             self.port = serial.Serial(port, speed, timeout=0.1)
         except serial.SerialException as e:
             exit(e)
+        self.lim = lim
         self._channels = channels
         self._data = [
             LimList([], lim) for _ in xrange(channels)
@@ -46,9 +47,9 @@ class Streamer(object):
         raw = ''
         while 1:
             raw += self.port.readall().encode('hex')
-            while len(raw) > 4:
+            while len(raw) >= 10:
                 if raw.startswith(self._start_bytes):
-                    info_string = raw[4:4+2*self.channels]
+                    info_string = raw[4*2:4*2+2*self.channels]
                     info_bytes = [info_string[x:x+2]
                                   for x in xrange(self.channels)]
                     with self.locker:

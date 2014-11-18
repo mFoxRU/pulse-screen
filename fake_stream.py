@@ -10,6 +10,7 @@ from stream import Streamer, LimList
 class FakeStreamer(Streamer):
     def __init__(self, port, speed=11520, channels=3, lim=200):
         self._channels = channels
+        self.lim = lim
         self._data = [
             LimList([], lim) for _ in xrange(channels)
         ]
