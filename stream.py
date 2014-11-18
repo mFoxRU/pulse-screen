@@ -66,6 +66,7 @@ class Streamer(object):
                     info_string = raw[4:4+2*self.channels]
                     info_bytes = [info_string[x*2:x*2+2]
                                   for x in xrange(self.channels)]
+                    info_bytes.reverse()
                     with self.locker:
                         for data, new in izip(self._data, info_bytes):
                             data.append(int(new, base=16))
