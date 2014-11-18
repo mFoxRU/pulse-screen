@@ -1,6 +1,7 @@
 __author__ = 'mFoxRU'
 
 import thread
+from time import sleep
 from itertools import izip
 
 import serial
@@ -23,10 +24,7 @@ class Streamer(object):
     _start_bytes = 'ffff'
 
     def __init__(self, port, speed=9600, channels=3, lim=200):
-        try:
-            self.port = serial.Serial(port, speed, timeout=0)
-        except serial.SerialException as e:
-            exit(e)
+        self.serial = serial.Serial(port, speed, timeout=0, rtscts=1)
         self.lim = lim
         self._channels = channels
         self._data = [
@@ -43,10 +41,26 @@ class Streamer(object):
         with self.locker:
             return self._data
 
+    def read_port(self, force=True):
+        while 1:
+            try:
+                if not self.serial.isOpen():
+                    self.serial.open()
+                new_raw = self.serial.readall().encode('hex')
+            except Exception as e:
+                if force:
+                    self.serial.close()
+                    sleep(0.1)
+                else:
+                    self.serial.close()
+                    exit(e)
+            else:
+                return new_raw
+
     def calc(self):
         raw = ''
         while 1:
-            raw += self.port.readall().encode('hex')
+            raw += self.read_port()
             while len(raw) >= 10:
                 if raw.startswith(self._start_bytes):
                     info_string = raw[4:4+2*self.channels]
