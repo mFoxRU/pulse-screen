@@ -48,7 +48,6 @@ class Streamer(object):
         while 1:
             raw += self.port.readall().encode('hex')
             while len(raw) >= 10:
-                print raw
                 if raw.startswith(self._start_bytes):
                     info_string = raw[4:4+2*self.channels]
                     info_bytes = [info_string[x*2:x*2+2]

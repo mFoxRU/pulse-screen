@@ -12,19 +12,22 @@ def parse_args():
     parser.add_argument(
         'port', metavar='PORT', help='Appropriate serial port')
     parser.add_argument(
-        '--channels', action='store', metavar='VALUE', default=3, type=int,
-        help='Number of channels in stream')
-    parser.add_argument('-f', help='Use fake stream source', action='store_true')
+        '-c', dest='channels', action='store', metavar='CHANNELS', default=3,
+        type=int, help='Number of channels in stream. Default value is 3')
+    parser.add_argument(
+        '-f', help='Use fake stream source', action='store_true')
+    parser.add_argument(
+        '-w', dest='width', metavar='VALUE', type=int, default=600,
+        help='Show last VALUE measurement. Default value is 600')
     return parser.parse_args()
 
 
 def main():
-    lim = 200
     conf = parse_args()
     if conf.f:
-        stream = FakeStreamer(conf.port, channels=conf.channels, lim=lim)
+        stream = FakeStreamer(conf.port, channels=conf.channels, lim=conf.width)
     else:
-        stream = Streamer(conf.port, channels=conf.channels, lim=lim)
+        stream = Streamer(conf.port, channels=conf.channels, lim=conf.width)
         stream.start()
 
     plotter(stream)
