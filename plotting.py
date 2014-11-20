@@ -19,11 +19,11 @@ def style_plot():
     plot.legend(loc='upper right')
 
 
-def plotter(stream, split_streams=True):
+def plotter(stream, unite=False):
     lines = []
     fig = plot.figure()
 
-    if not split_streams:
+    if unite:
         ax = plot.axes(xlim=(0, stream.lim), ylim=(0, 256))
         for chan in xrange(stream.channels):
             line, = ax.plot([], [], label='Channel {0}'.format(chan+1))

@@ -19,6 +19,9 @@ def parse_args():
     parser.add_argument(
         '-w', dest='width', metavar='VALUE', type=int, default=600,
         help='Show last VALUE measurement. Default value is 600')
+    parser.add_argument(
+        '-u', dest='unite', action='store_true',
+        help='Show all channels on one plot')
     return parser.parse_args()
 
 
@@ -30,7 +33,7 @@ def main():
         stream = Streamer(conf.port, channels=conf.channels, lim=conf.width)
         stream.start()
 
-    plotter(stream)
+    plotter(stream, conf.unite)
 
 
 if __name__ == '__main__':
