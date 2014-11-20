@@ -1,3 +1,4 @@
+# from __future__ import division
 __author__ = 'mFoxRU'
 
 from itertools import izip
@@ -9,7 +10,17 @@ import matplotlib.animation as anim
 def animate(i, lines, stream):
     datas = [list(x) for x in stream.data]
     for line, data in izip(lines, datas):
-        line.set_data(xrange(len(data)), data)
+        ndata = []
+        if len(data) > 3:
+            ndata = [data[0]]
+            ndata.extend([
+                (data[x]+data[x+1]+data[x+2])/3 for x in xrange(len(data)-2)
+            ])
+            ndata.append(data[-1])
+        else:
+            ndata = data
+
+        line.set_data(xrange(len(ndata)), ndata)
     return lines
 
 
@@ -20,6 +31,7 @@ def style_plot():
 
 
 def set_fullscreen():
+    # http://stackoverflow.com/questions/12439588/how-to-maximize-a-plt-show-window-using-python
     backend = plot.get_backend()
     win = plot.get_current_fig_manager()
     if backend == 'TkAgg':
