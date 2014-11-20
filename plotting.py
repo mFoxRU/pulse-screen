@@ -19,7 +19,16 @@ def style_plot():
     plot.legend(loc='upper right')
 
 
-def plotter(stream, unite=False):
+def set_fullscreen():
+    backend = plot.get_backend()
+    win = plot.get_current_fig_manager()
+    if backend == 'TkAgg':
+        win.resize(*win.window.maxsize())
+    else:
+        print 'Fullscreen not supported'
+
+
+def plotter(stream, unite=False, blit=False, fullscreen=False):
     lines = []
     fig = plot.figure()
 
@@ -36,10 +45,9 @@ def plotter(stream, unite=False):
             line, = qax.plot([], [], label='Channel {0}'.format(chan+1))
             style_plot()
             lines.append(line)
-
-
-
     plot.xlabel('Time')
+    if fullscreen:
+        set_fullscreen()
     animus = anim.FuncAnimation(fig, animate,
-                                fargs=(lines, stream), interval=10, blit=False)
+                                fargs=(lines, stream), interval=10, blit=blit)
     plot.show()

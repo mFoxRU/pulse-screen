@@ -22,6 +22,10 @@ def parse_args():
     parser.add_argument(
         '-u', dest='unite', action='store_true',
         help='Show all channels on one plot')
+    parser.add_argument(
+        '-F', dest='fullscreen', action='store_true',
+        help='Start in fullscreen')
+    parser.add_argument('-b', dest='blit', action='store_true')
     return parser.parse_args()
 
 
@@ -33,7 +37,7 @@ def main():
         stream = Streamer(conf.port, channels=conf.channels, lim=conf.width)
         stream.start()
 
-    plotter(stream, conf.unite)
+    plotter(stream, conf.unite, conf.blit, conf.fullscreen)
 
 
 if __name__ == '__main__':
