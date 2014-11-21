@@ -51,8 +51,12 @@ def plotter(stream, unite=False, blit=False, fullscreen=False):
             lines.append(line)
         style_plot()
     else:
+        if stream.channels <= 3:
+            base = 311
+        else:
+            base = 321
         for chan in xrange(stream.channels):
-            qax = fig.add_subplot(311+chan, xlim=(0, stream.lim), ylim=(0, 256))
+            qax = fig.add_subplot(base+chan, xlim=(0, stream.lim), ylim=(0, 256))
             # x = plot.subplot(210+chan)
             line, = qax.plot([], [], label='Channel {0}'.format(chan+1))
             style_plot()
