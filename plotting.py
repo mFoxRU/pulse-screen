@@ -31,11 +31,15 @@ def style_plot():
 
 
 def set_fullscreen():
-    # http://stackoverflow.com/questions/12439588/how-to-maximize-a-plt-show-window-using-python
+    # http://stackoverflow.com/questions/12439588
     backend = plot.get_backend()
     win = plot.get_current_fig_manager()
     if backend == 'TkAgg':
         win.resize(*win.window.maxsize())
+    elif backend == 'wxAgg':
+        win.frame.Maximize(True)
+    elif backend == 'QT4Agg':
+        win.window.showMaximized()
     else:
         print 'Fullscreen not supported'
 
