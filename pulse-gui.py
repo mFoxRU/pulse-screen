@@ -21,9 +21,11 @@ class PulseGui(tk.Frame):
         tk.Frame.__init__(self, master)
         self.master.title('PulseScreen')
         self.grid()
-        self.add_interface()
+        self.add_source_interface()
+        self.add_control_interface()
+        self.add_plot()
 
-    def add_interface(self):
+    def add_source_interface(self):
         ports = ['Emulate']
         ports.extend([p for p in self._serial_ports()])
         self.port = tk.StringVar()
@@ -43,6 +45,43 @@ class PulseGui(tk.Frame):
         tk.Button(
             self.source_frame, text='Quit', command=self._exit
         ).grid(column=3, row=0)
+
+    def add_control_interface(self):
+        self.control_frame = tk.Frame(self)
+        self.control_frame.grid(column=1, row=0)
+
+        self.channels_num = tk.StringVar()
+
+
+        isdigcmd = self.register(self._validate_channels)
+        tk.Spinbox(self.control_frame, textvariable=self.channels_num,
+                   from_=1, to_=100, validate='all',
+                   validatecommand=(isdigcmd, '%P')
+        ).grid()
+
+        tk.Button(self.control_frame, text=123123123,
+                  command=lambda: self.master.title(self.channels_num.get())
+        ).grid(column=1, row=0)
+
+        # channels
+        # width
+        pass
+
+    def add_plot(self):
+        pass
+
+    def _validate_channels(self, ch):
+        if len(ch):
+            return ch.isdigit()
+        self.channels_num.set('1')
+        return True
+
+
+
+    @staticmethod
+    def _print(s='qwerty'):
+        print s
+        return s.isdigit()
 
     def _connect(self):
         for child in self.source_frame.winfo_children():
