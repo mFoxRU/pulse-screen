@@ -3,12 +3,12 @@ __author__ = 'mFoxRU'
 
 from itertools import izip
 
-import matplotlib.pyplot as plot
+from matplotlib.figure import Figure
 import matplotlib.animation as anim
 
 
-def animate(i, lines, stream):
-    datas = [list(x) for x in stream.data]
+def ani_fn(i, lines, stream):
+    datas = [list(x[0]) for x in stream.data]
     for line, data in izip(lines, datas):
         ndata = []
         if len(data) > 3:
@@ -22,12 +22,6 @@ def animate(i, lines, stream):
 
         line.set_data(xrange(len(ndata)), ndata)
     return lines
-
-
-def style_plot():
-    plot.ylabel('Value')
-    plot.grid()
-    plot.legend(loc='upper right')
 
 
 def set_fullscreen():
@@ -44,30 +38,82 @@ def set_fullscreen():
         print 'Fullscreen not supported'
 
 
-def plotter(stream, unite=False, blit=False, fullscreen=False):
-    lines = []
-    fig = plot.figure()
+def style_plot():
+    # plot.ylabel('Value')
+    # plot.grid()
+    # plot.legend(loc='upper right')
+    pass
 
-    if unite:
-        ax = plot.axes(xlim=(0, stream.lim), ylim=(0, 256))
-        for chan in xrange(stream.channels):
-            line, = ax.plot([], [], label='Channel {0}'.format(chan+1))
-            lines.append(line)
-        style_plot()
+
+def make_unite_plots(fig, ch, lim):
+    lines = []
+    ax = fig.axes(xlim=(0, lim), ylim=(0, 256))
+    for chan in xrange(ch):
+        line, = ax.plot([], [], label='Channel {0}'.format(chan+1))
+        lines.append(line)
+    style_plot()
+    fig
+    # plot.xlabel('Time')
+    return lines
+
+
+def make_split_plots(fig, ch, lim):
+    lines = []
+    if ch <= 3:
+        base = 311
     else:
-        if stream.channels <= 3:
-            base = 311
-        else:
-            base = 321
-        for chan in xrange(stream.channels):
-            qax = fig.add_subplot(base+chan, xlim=(0, stream.lim), ylim=(0, 256))
-            # x = plot.subplot(210+chan)
-            line, = qax.plot([], [], label='Channel {0}'.format(chan+1))
-            style_plot()
-            lines.append(line)
-    plot.xlabel('Time')
+        base = 321
+    for chan in xrange(ch):
+        qax = fig.add_subplot(base+chan, xlim=(0, lim), ylim=(0, 256))
+        # x = plot.subplot(210+chan)
+        # qax.xaxis.set_animated(True)
+        line, = qax.plot([], [], label='Channel {0}'.format(chan+1))
+        style_plot()
+        lines.append(line)
+    # plot.xlabel('Time')
+    return lines
+
+
+def animate(fig, fn, lines, stream, blit):
+    return anim.FuncAnimation(
+        fig, fn, fargs=(lines, stream), interval=10, blit=blit)
+
+
+def plotter(stream, unite=False, blit=False, fullscreen=False):
+    fig = Figure()
+    lim = stream.lim
+    ch = stream.channels
+    if unite:
+        lines = make_unite_plots(fig, ch, lim)
+    else:
+        lines = make_split_plots(fig, ch, lim)
+
     if fullscreen:
         set_fullscreen()
-    animus = anim.FuncAnimation(fig, animate,
-                                fargs=(lines, stream), interval=10, blit=blit)
+    animation = animate(fig, ani_fn, lines, stream, blit)
     plot.show()
+
+
+if __name__ == '__main__':
+    from fake_stream import FakeStreamer
+
+    astream = FakeStreamer('', 111, 3, 100)
+
+    unite = False
+
+    blit = True
+
+    plotter(astream, unite, blit, False)
+
+
+
+
+
+
+
+
+
+
+
+
+

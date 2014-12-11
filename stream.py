@@ -7,17 +7,25 @@ from itertools import izip
 import serial
 
 
-class LimList(list):
-    def __init__(self, iterable, lim=200):
-        super(self.__class__, self).__init__(iterable)
+class LimList(object):
+    def __init__(self, lim=200):
         self.lim = lim
-        self.counter = len(iterable)
+        self.counter = 0
+        self._data = []
+        self.new_data = []
 
-    def append(self, p_object):
-        super(self.__class__, self).append(p_object)
+    def add(self, new_data):
+        self._data.append(new_data)
+        self.new_data.append(new_data)
         self.counter += 1
-        while self.__len__() > self.lim:
-            self.pop(0)
+        while len(self._data) > self.lim:
+            self._data.pop(0)
+
+    @property
+    def datas(self):
+        new_data = self.new_data
+        self.new_data = []
+        return self._data, new_data
 
 
 class Streamer(object):
@@ -28,7 +36,7 @@ class Streamer(object):
         self.lim = lim
         self._channels = channels
         self._data = [
-            LimList([], lim) for _ in xrange(channels)
+            LimList(lim) for _ in xrange(channels)
         ]
         self.locker = thread.allocate_lock()
 
@@ -69,7 +77,7 @@ class Streamer(object):
                     info_bytes.reverse()
                     with self.locker:
                         for data, new in izip(self._data, info_bytes):
-                            data.append(int(new, base=16))
+                            data.add(int(new, base=16))
                     raw = raw[4+2*self.channels:]
                 else:
                     raw = raw[2:]
